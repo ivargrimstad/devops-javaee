@@ -14,7 +14,7 @@
       <module>snoop-demo</module>
    </modules>
 
-  <scm>
+   <scm>
       <connection>scm:git:ssh://git@bitbucket.org:ivargrimstad/devops-javaee.git</connection>
       <developerConnection>scm:git:ssh://git@bitbucket.org:ivargrimstad/devops-javaee.git</developerConnection>
       <tag>HEAD</tag>
