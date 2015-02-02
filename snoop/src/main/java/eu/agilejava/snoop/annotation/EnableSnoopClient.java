@@ -30,6 +30,7 @@ import javax.inject.Qualifier;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.enterprise.context.ApplicationScoped;
 
 /**
  *
@@ -38,6 +39,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Qualifier
 @Retention(RUNTIME)
 @Documented
+@ApplicationScoped
 @Target(TYPE)
 public @interface EnableSnoopClient {
    

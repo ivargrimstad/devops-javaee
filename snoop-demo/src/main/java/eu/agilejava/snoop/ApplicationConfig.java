@@ -21,39 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.agilejava.snoop.scan;
+package eu.agilejava.snoop;
 
 import eu.agilejava.snoop.annotation.EnableSnoopClient;
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Inject;
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@Startup
-@Singleton
-public class SnoopScanner {
-
-   @Inject
-   private BeanManager beanManager;
+@EnableSnoopClient
+public class ApplicationConfig {
    
-   @PostConstruct
-   private void init() {
-
-      System.out.println("scanning");
-
-      beanManager.getBeans(Object.class, new AnnotationLiteral<EnableSnoopClient>() {}).stream()
-              .forEach(b -> System.out.println(b));
-      
-      
-      // scan for EnableSnoopClient annotations
-      // lookup config
-      // register with snoop service
-      
-   }
 }
