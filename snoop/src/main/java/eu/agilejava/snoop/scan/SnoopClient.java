@@ -25,17 +25,14 @@ package eu.agilejava.snoop.scan;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.Calendar;
 import javax.annotation.Resource;
-import javax.ejb.Schedule;
+import javax.ejb.ScheduleExpression;
 import javax.ejb.Singleton;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
-import javax.enterprise.context.Dependent;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
@@ -48,12 +45,34 @@ import javax.websocket.WebSocketContainer;
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
 @ClientEndpoint
-@Dependent
+@Singleton
 public class SnoopClient {
 
    private static final String BASE_URI = "ws://localhost:8080/snoop-service/";
-   private Map<String, String> messages = new HashMap<>();
-   private CountDownLatch messageLatch;
+
+   @Resource
+   private TimerService timerService;
+
+   public void register(final String clientId) {
+      sendMessage("snoop", clientId);
+
+      ScheduleExpression schedule = new ScheduleExpression();
+      schedule.second("*/10").minute("*").hour("*").start(Calendar.getInstance().getTime());
+
+      TimerConfig config = new TimerConfig();
+      config.setPersistent(false);
+
+      Timer timer = timerService.createCalendarTimer(schedule, config);
+
+      System.out.println(timer.getSchedule());
+   }
+
+   @Timeout
+   public void resend( Timer timer) {
+      System.out.println("health update: " + Calendar.getInstance().getTime());
+      System.out.println("Next: " + timer.getNextTimeout());
+      sendMessage("snoopstatus/snoopy", "UP");
+   }
 
    /**
     * Sends message to the WebSocket server.
@@ -62,22 +81,20 @@ public class SnoopClient {
     * @param msg The message
     * @return a return message
     */
-   public String sendMessage(String endpoint, String msg) {
+   private String sendMessage(String endpoint, String msg) {
 
       System.out.println("Sending message!");
 
       String returnValue = "-1";
       try {
-         messageLatch = new CountDownLatch(1);
          WebSocketContainer container = ContainerProvider.getWebSocketContainer();
          String uri = BASE_URI + endpoint;
          Session session = container.connectToServer(this, URI.create(uri));
          session.getBasicRemote().sendText(msg != null ? msg : "");
          returnValue = session.getId();
          System.out.println(returnValue);
-         messageLatch.await(100, TimeUnit.SECONDS);
 
-      } catch (DeploymentException | IOException | InterruptedException ex) {
+      } catch (DeploymentException | IOException ex){
          ex.printStackTrace();
       }
 
@@ -93,19 +110,7 @@ public class SnoopClient {
    @OnMessage
    public void onMessage(Session session, String message) {
       System.out.println(message);
-      messages.put(session.getId(), message);
-      messageLatch.countDown();
 
       sendMessage("snoopstatus/snoopy", "UP");
-   }
-
-   /**
-    * Gets the message for this session.
-    *
-    * @param sessionId The session id
-    * @return The message
-    */
-   public String getMessage(String sessionId) {
-      return messages.get(sessionId);
    }
 }
