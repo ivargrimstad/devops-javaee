@@ -21,29 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.agilejava.snoop.annotation;
+package eu.agilejava.snoop;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import javax.inject.Qualifier;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.util.Nonbinding;
+import javax.ejb.Stateless;
+import javax.websocket.OnMessage;
+import javax.websocket.server.ServerEndpoint;
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@Qualifier
-@Retention(RUNTIME)
-@Documented
-@ApplicationScoped
-@Target(TYPE)
-public @interface EnableSnoopClient {
+@ServerEndpoint("/snoop")
+@Stateless
+public class SnoopEndpoint {
+
+   @OnMessage
+   public String onMessage(String message) {
+      System.out.println("Schnooooopppy!!!");
+      return "snooping";
+   }
    
-   @Nonbinding
-   String appicationName();
 }

@@ -12,6 +12,7 @@
       <module>snoop</module>
       <module>snoop-service</module>
       <module>snoop-demo</module>
+      <module>snoop-eureka</module>
    </modules>
 
    <scm>

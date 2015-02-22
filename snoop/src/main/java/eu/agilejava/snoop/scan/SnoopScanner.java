@@ -41,19 +41,23 @@ public class SnoopScanner {
 
    @Inject
    private BeanManager beanManager;
-   
+
+   @Inject
+   private SnoopClient snoopClient;
+
    @PostConstruct
    private void init() {
 
       System.out.println("scanning");
 
-      beanManager.getBeans(Object.class, new AnnotationLiteral<EnableSnoopClient>() {}).stream()
+      beanManager.getBeans(Object.class, new AnnotationLiteral<EnableSnoopClient>() {
+      }).stream()
               .forEach(b -> System.out.println(b));
       
-      
+      snoopClient.sendMessage("snoop","snoopy");
       // scan for EnableSnoopClient annotations
       // lookup config
       // register with snoop service
-      
+
    }
 }

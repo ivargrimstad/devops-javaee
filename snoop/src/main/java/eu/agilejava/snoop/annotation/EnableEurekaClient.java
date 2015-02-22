@@ -24,14 +24,12 @@
 package eu.agilejava.snoop.annotation;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import javax.inject.Qualifier;
-
 import static java.lang.annotation.ElementType.TYPE;
+import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.util.Nonbinding;
+import javax.inject.Qualifier;
 
 /**
  *
@@ -42,8 +40,6 @@ import javax.enterprise.util.Nonbinding;
 @Documented
 @ApplicationScoped
 @Target(TYPE)
-public @interface EnableSnoopClient {
+public @interface EnableEurekaClient {
    
-   @Nonbinding
-   String appicationName();
 }

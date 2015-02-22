@@ -29,7 +29,7 @@ import eu.agilejava.snoop.annotation.EnableSnoopClient;
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@EnableSnoopClient
+@EnableSnoopClient(appicationName = "demostuff")
 public class ApplicationConfig {
    
 }
