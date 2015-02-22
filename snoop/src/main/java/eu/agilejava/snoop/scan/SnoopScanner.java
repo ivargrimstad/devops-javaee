@@ -50,9 +50,9 @@ public class SnoopScanner {
 
       System.out.println("scanning");
 
-      beanManager.getBeans(Object.class, new AnnotationLiteral<EnableSnoopClient>() {
-      }).stream()
-              .forEach(b -> System.out.println(b));
+//      beanManager.getBeans(Object.class, new AnnotationLiteral<EnableSnoopClient>() {
+//      }).stream()
+//              .forEach(b -> System.out.println(b));
       
       snoopClient.sendMessage("snoop","snoopy");
       // scan for EnableSnoopClient annotations

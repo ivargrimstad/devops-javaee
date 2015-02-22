@@ -26,24 +26,26 @@ package eu.agilejava.snoop;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.websocket.OnMessage;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@ServerEndpoint("/snoop")
+@ServerEndpoint("/snoopstatus/{clientId}")
 @Stateless
-public class SnoopEndpoint {
-
+public class SnoopStatusEndpoint {
+   
    @EJB
    private SnoopClientRegistry clients;
    
    @OnMessage
-   public String onMessage(String message) {
-      System.out.println("Schnooooopppy!!!");
-      clients.register(message);
-      return "snoopstatus/" + message;
+   public void onMessage(@PathParam("clientId") String clientId, String message) {
+      
+      System.out.println("Client: " + clientId + ", status: " + message);
+      
+      clients.register(clientId);
+      
    }
-   
 }

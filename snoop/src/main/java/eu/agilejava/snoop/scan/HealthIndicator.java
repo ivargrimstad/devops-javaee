@@ -21,29 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.agilejava.snoop;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.websocket.OnMessage;
-import javax.websocket.server.ServerEndpoint;
+package eu.agilejava.snoop.scan;
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@ServerEndpoint("/snoop")
-@Stateless
-public class SnoopEndpoint {
-
-   @EJB
-   private SnoopClientRegistry clients;
-   
-   @OnMessage
-   public String onMessage(String message) {
-      System.out.println("Schnooooopppy!!!");
-      clients.register(message);
-      return "snoopstatus/" + message;
-   }
-   
+public class HealthIndicator {
 }

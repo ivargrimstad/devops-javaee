@@ -23,27 +23,23 @@
  */
 package eu.agilejava.snoop;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.websocket.OnMessage;
-import javax.websocket.server.ServerEndpoint;
+import java.util.HashMap;
+import java.util.Map;
+import javax.ejb.Singleton;
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@ServerEndpoint("/snoop")
-@Stateless
-public class SnoopEndpoint {
+@Singleton
+public class SnoopClientRegistry {
 
-   @EJB
-   private SnoopClientRegistry clients;
-   
-   @OnMessage
-   public String onMessage(String message) {
-      System.out.println("Schnooooopppy!!!");
-      clients.register(message);
-      return "snoopstatus/" + message;
+   private final Map<String, Long> clients = new HashMap<>();
+
+   public void register( final String clientId) {
+      clients.put(clientId, System.currentTimeMillis());
+      
+      System.out.println("Client: " + clientId + " registered up at " + clients.get(clientId));
    }
    
 }

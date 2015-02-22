@@ -29,6 +29,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Resource;
+import javax.ejb.Schedule;
+import javax.ejb.Singleton;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerService;
 import javax.enterprise.context.Dependent;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
@@ -44,14 +50,14 @@ import javax.websocket.WebSocketContainer;
 @ClientEndpoint
 @Dependent
 public class SnoopClient {
-    
+
    private static final String BASE_URI = "ws://localhost:8080/snoop-service/";
    private Map<String, String> messages = new HashMap<>();
    private CountDownLatch messageLatch;
 
    /**
     * Sends message to the WebSocket server.
-    * 
+    *
     * @param endpoint The server endpoint
     * @param msg The message
     * @return a return message
@@ -59,7 +65,7 @@ public class SnoopClient {
    public String sendMessage(String endpoint, String msg) {
 
       System.out.println("Sending message!");
-      
+
       String returnValue = "-1";
       try {
          messageLatch = new CountDownLatch(1);
@@ -80,7 +86,7 @@ public class SnoopClient {
 
    /**
     * Handles incoming message.
-    * 
+    *
     * @param session The WebSocket session
     * @param message The message
     */
@@ -89,11 +95,13 @@ public class SnoopClient {
       System.out.println(message);
       messages.put(session.getId(), message);
       messageLatch.countDown();
+
+      sendMessage("snoopstatus/snoopy", "UP");
    }
 
    /**
     * Gets the message for this session.
-    * 
+    *
     * @param sessionId The session id
     * @return The message
     */
