@@ -24,7 +24,10 @@
 package eu.agilejava.snoop;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.ejb.Singleton;
 
 /**
@@ -42,4 +45,10 @@ public class SnoopClientRegistry {
       System.out.println("Client: " + clientId + " registered up at " + clients.get(clientId));
    }
    
+   public Set<String> getClients() {
+  
+      return clients.keySet().stream()
+              .filter(c -> clients.get(c) > System.currentTimeMillis() - 10000)
+              .collect(Collectors.toSet());
+   }
 }

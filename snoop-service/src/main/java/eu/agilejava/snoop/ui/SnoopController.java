@@ -21,42 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.agilejava.snoop.scan;
+package eu.agilejava.snoop.ui;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import eu.agilejava.snoop.SnoopClientRegistry;
+import java.util.Set;
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@Startup
-@Singleton
-public class SnoopScanner {
-
-   @Resource
-   private BeanManager beanManager;
-
-   @Inject
-   private SnoopClient snoopClient;
-
-   @PostConstruct
-   private void init() {
-
-      System.out.println("scanning");
-
-      
-//      beanManager.getBeans(Object.class, new AnnotationLiteral<EnableSnoopClient>() {
-//      }).stream()
-//              .forEach(b -> System.out.println(b));
-      snoopClient.register("snoopy");
-      // scan for EnableSnoopClient annotations
-      // lookup config
-      // register with snoop service
-
+@RequestScoped
+@Named
+public class SnoopController {
+   
+   @EJB
+   private SnoopClientRegistry clients;
+   
+   public Set<String> getClients() {
+      System.out.println("returning");
+      return clients.getClients();
    }
 }
