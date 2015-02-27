@@ -48,11 +48,6 @@ public class SnoopScanner {
    private void init() {
 
       System.out.println("scanning");
-
-      
-//      beanManager.getBeans(Object.class, new AnnotationLiteral<EnableSnoopClient>() {
-//      }).stream()
-//              .forEach(b -> System.out.println(b));
       snoopClient.register("snoopy");
       // scan for EnableSnoopClient annotations
       // lookup config
