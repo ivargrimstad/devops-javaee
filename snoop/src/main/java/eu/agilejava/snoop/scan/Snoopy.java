@@ -21,15 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.agilejava.snoop;
+package eu.agilejava.snoop.scan;
 
 import eu.agilejava.snoop.annotation.EnableSnoopClient;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.WithAnnotations;
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@EnableSnoopClient(appicationName = "snoopy")
-public class ApplicationConfig {
+public class Snoopy implements Extension {
+
+   private String applicationName;
    
+   void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
+      System.out.println("beginning the scanning process");
+   }
+
+   void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm) {
+      
+      SnoopExtensionHelper.setApplicationName(applicationName);
+      System.out.println("finished the scanning process");
+   }
+
+   <T> void processAnnotatedType(@Observes @WithAnnotations({EnableSnoopClient.class}) ProcessAnnotatedType<T> pat) {
+      System.out.println("Found: " + pat.getAnnotatedType().getJavaClass().getName());
+      applicationName = pat.getAnnotatedType().getAnnotation(EnableSnoopClient.class).appicationName();
+      System.out.println("My name is: " + applicationName);
+   }
 }

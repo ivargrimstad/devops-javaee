@@ -21,29 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.agilejava.snoop.annotation;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Stereotype;
-import javax.enterprise.util.Nonbinding;
+package eu.agilejava.snoop.scan;
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@Stereotype
-@Retention(RUNTIME)
-@Documented
-@ApplicationScoped
-@Target(TYPE)
-public @interface EnableSnoopClient {
+public final class SnoopExtensionHelper {
+
+   private String applicationName;
+   private boolean snoopEnabled;
    
-   @Nonbinding
-   String appicationName();
+   private static final SnoopExtensionHelper INSTANCE = new SnoopExtensionHelper();
+   
+   public static String getApplicationName() {
+      return INSTANCE.applicationName;
+   }
+
+   public static void setApplicationName(String applicationName) {
+      INSTANCE.applicationName = applicationName;
+      INSTANCE.snoopEnabled = true;
+   }
+
+   public static boolean isSnoopEnabled() {
+      return INSTANCE.snoopEnabled;
+   }
 }

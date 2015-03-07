@@ -24,11 +24,9 @@
 package eu.agilejava.snoop.scan;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
 
 /**
  *
@@ -38,20 +36,18 @@ import javax.inject.Inject;
 @Singleton
 public class SnoopScanner {
 
-   @Resource
-   private BeanManager beanManager;
-
-   @Inject
+   @EJB
    private SnoopClient snoopClient;
 
    @PostConstruct
    private void init() {
 
-      System.out.println("scanning");
-      snoopClient.register("snoopy");
-      // scan for EnableSnoopClient annotations
-      // lookup config
-      // register with snoop service
-
+      if (SnoopExtensionHelper.isSnoopEnabled()) {
+         System.out.println("Registering " + SnoopExtensionHelper.getApplicationName());
+         snoopClient.register(SnoopExtensionHelper.getApplicationName());
+      } else {
+         System.out.println("Snoop is not enabled. Use @EnableSnoopClient!");
+      }
    }
+
 }
