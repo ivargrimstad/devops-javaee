@@ -26,6 +26,7 @@ package eu.agilejava.snoop.scan;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ScheduleExpression;
 import javax.ejb.Singleton;
@@ -48,6 +49,7 @@ import javax.websocket.WebSocketContainer;
 @Singleton
 public class SnoopClient {
 
+   private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
    private static final String BASE_URI = "ws://localhost:8080/snoop-service/";
 
    @Resource
@@ -64,13 +66,13 @@ public class SnoopClient {
 
       Timer timer = timerService.createCalendarTimer(schedule, config);
 
-      System.out.println(timer.getSchedule());
+      LOGGER.config(() -> timer.getSchedule().toString());
    }
 
    @Timeout
-   public void resend( Timer timer) {
-      System.out.println("health update: " + Calendar.getInstance().getTime());
-      System.out.println("Next: " + timer.getNextTimeout());
+   public void resend(Timer timer) {
+      LOGGER.info(() -> "health update: " + Calendar.getInstance().getTime());
+      LOGGER.info(() -> "Next: " + timer.getNextTimeout());
       sendMessage("snoopstatus/snoopy", "UP");
    }
 
@@ -83,7 +85,7 @@ public class SnoopClient {
     */
    private String sendMessage(String endpoint, String msg) {
 
-      System.out.println("Sending message!");
+      LOGGER.info("Sending message!");
 
       String returnValue = "-1";
       try {
@@ -94,8 +96,8 @@ public class SnoopClient {
          returnValue = session.getId();
          System.out.println(returnValue);
 
-      } catch (DeploymentException | IOException ex){
-         ex.printStackTrace();
+      } catch (DeploymentException | IOException ex) {
+         LOGGER.warning(ex.getMessage());
       }
 
       return returnValue;
@@ -109,7 +111,7 @@ public class SnoopClient {
     */
    @OnMessage
    public void onMessage(Session session, String message) {
-      System.out.println(message);
+      LOGGER.info(() -> "Message: " + message);
 
       sendMessage("snoopstatus/snoopy", "UP");
    }

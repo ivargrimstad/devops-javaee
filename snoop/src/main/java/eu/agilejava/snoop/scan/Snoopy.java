@@ -24,6 +24,7 @@
 package eu.agilejava.snoop.scan;
 
 import eu.agilejava.snoop.annotation.EnableSnoopClient;
+import java.util.logging.Logger;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.BeanManager;
@@ -38,21 +39,26 @@ import javax.enterprise.inject.spi.WithAnnotations;
  */
 public class Snoopy implements Extension {
 
+   private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
+
    private String applicationName;
-   
+   private boolean snoopEnabled;
+
    void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
-      System.out.println("beginning the scanning process");
+      LOGGER.config("Beginning the scanning process");
    }
 
    void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm) {
-      
+
       SnoopExtensionHelper.setApplicationName(applicationName);
-      System.out.println("finished the scanning process");
+      SnoopExtensionHelper.setSnoopEnabled(snoopEnabled);
+      LOGGER.config("finished the scanning process");
    }
 
    <T> void processAnnotatedType(@Observes @WithAnnotations({EnableSnoopClient.class}) ProcessAnnotatedType<T> pat) {
-      System.out.println("Found: " + pat.getAnnotatedType().getJavaClass().getName());
+      LOGGER.config(() -> "Found @EnableSnoopClient annotated class: " + pat.getAnnotatedType().getJavaClass().getName());
+      snoopEnabled = true;
       applicationName = pat.getAnnotatedType().getAnnotation(EnableSnoopClient.class).appicationName();
-      System.out.println("My name is: " + applicationName);
+      LOGGER.config(() -> "Application name is: " + applicationName);
    }
 }

@@ -40,10 +40,13 @@ public final class SnoopExtensionHelper {
 
    public static void setApplicationName(String applicationName) {
       INSTANCE.applicationName = applicationName;
-      INSTANCE.snoopEnabled = true;
    }
 
    public static boolean isSnoopEnabled() {
       return INSTANCE.snoopEnabled;
+   }
+   
+   public static void setSnoopEnabled(final boolean snoopEnabled) {
+      INSTANCE.snoopEnabled = snoopEnabled;
    }
 }

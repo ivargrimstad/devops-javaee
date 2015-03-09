@@ -23,6 +23,7 @@
  */
 package eu.agilejava.snoop.scan;
 
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -36,17 +37,21 @@ import javax.ejb.Startup;
 @Singleton
 public class SnoopScanner {
 
+   private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
+   
    @EJB
    private SnoopClient snoopClient;
 
    @PostConstruct
    private void init() {
 
+      LOGGER.config("Checking if snoop is enabled");
+      
       if (SnoopExtensionHelper.isSnoopEnabled()) {
-         System.out.println("Registering " + SnoopExtensionHelper.getApplicationName());
+         LOGGER.config(() -> "Registering " + SnoopExtensionHelper.getApplicationName());
          snoopClient.register(SnoopExtensionHelper.getApplicationName());
       } else {
-         System.out.println("Snoop is not enabled. Use @EnableSnoopClient!");
+         LOGGER.config("Snoop is not enabled. Use @EnableSnoopClient!");
       }
    }
 
