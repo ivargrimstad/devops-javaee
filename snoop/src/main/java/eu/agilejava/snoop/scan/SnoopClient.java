@@ -23,13 +23,20 @@
  */
 package eu.agilejava.snoop.scan;
 
+import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.ScheduleExpression;
 import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
@@ -47,6 +54,7 @@ import javax.websocket.WebSocketContainer;
  */
 @ClientEndpoint
 @Singleton
+@Startup
 public class SnoopClient {
 
    private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
@@ -112,7 +120,44 @@ public class SnoopClient {
    @OnMessage
    public void onMessage(Session session, String message) {
       LOGGER.info(() -> "Message: " + message);
-
       sendMessage("snoopstatus/snoopy", "UP");
    }
+
+   @PostConstruct
+   private void init() {
+
+      LOGGER.config("Checking if snoop is enabled");
+
+      if (SnoopExtensionHelper.isSnoopEnabled()) {
+
+         try {
+
+            String applicationName = SnoopExtensionHelper.getApplicationName();
+
+            YamlReader reader = new YamlReader(new FileReader(this.getClass().getResource("/application.yml").getFile()));
+            Map<String, Object> config = (Map<String, Object>) reader.read();
+            if (config != null) {
+               Map<String, Object> snoopConfig = (Map<String, Object>) config.get("snoop");
+
+               if (snoopConfig != null && snoopConfig.get("appicationName") != null) {
+                  applicationName = (String) snoopConfig.get("appicationName");
+               }
+            }
+
+            if (applicationName != null) {
+               LOGGER.config(() -> "Registering " + SnoopExtensionHelper.getApplicationName());
+               register(SnoopExtensionHelper.getApplicationName());
+            } else {
+               LOGGER.config("Snoop is not configured correctly. Application name missing!");
+            }
+
+         } catch (FileNotFoundException | YamlException ex) {
+            LOGGER.severe(ex.getMessage());
+         }
+
+      } else {
+         LOGGER.config("Snoop is not enabled. Use @EnableSnoopClient!");
+      }
+   }
+
 }

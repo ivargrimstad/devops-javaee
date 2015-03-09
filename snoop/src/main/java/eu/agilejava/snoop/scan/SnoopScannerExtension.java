@@ -37,7 +37,7 @@ import javax.enterprise.inject.spi.WithAnnotations;
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-public class Snoopy implements Extension {
+public class SnoopScannerExtension implements Extension {
 
    private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
 
