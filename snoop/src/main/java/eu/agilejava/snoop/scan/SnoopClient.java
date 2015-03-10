@@ -23,14 +23,13 @@
  */
 package eu.agilejava.snoop.scan;
 
-import com.esotericsoftware.yamlbeans.YamlException;
-import com.esotericsoftware.yamlbeans.YamlReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
-import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -41,6 +40,7 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
+import javax.json.stream.JsonParser;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
@@ -130,29 +130,33 @@ public class SnoopClient {
 
       if (SnoopExtensionHelper.isSnoopEnabled()) {
 
+         String applicationName = SnoopExtensionHelper.getApplicationName();
+
          try {
 
-            String applicationName = SnoopExtensionHelper.getApplicationName();
+            YAMLFactory factory = new YAMLFactory();
+            YAMLParser parser = factory.createParser(this.getClass().getResource("/application.yml"));
 
-            YamlReader reader = new YamlReader(new FileReader(this.getClass().getResource("/application.yml").getFile()));
-            Map<String, Object> config = (Map<String, Object>) reader.read();
-            if (config != null) {
-               Map<String, Object> snoopConfig = (Map<String, Object>) config.get("snoop");
+            while (parser.nextToken() != null) {
 
-               if (snoopConfig != null && snoopConfig.get("appicationName") != null) {
-                  applicationName = (String) snoopConfig.get("appicationName");
+               if (parser.getCurrentName() != null
+                       && parser.getCurrentName().equals("applicationName")
+                       && parser.getValueAsString() != null) {
+
+                  applicationName = parser.getValueAsString();
+                  System.out.println("application name: " + applicationName);
                }
             }
 
-            if (applicationName != null) {
-               LOGGER.config(() -> "Registering " + SnoopExtensionHelper.getApplicationName());
-               register(SnoopExtensionHelper.getApplicationName());
-            } else {
-               LOGGER.config("Snoop is not configured correctly. Application name missing!");
-            }
-
-         } catch (FileNotFoundException | YamlException ex) {
+         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
+         }
+
+         if (applicationName != null) {
+            LOGGER.config("Registering " + applicationName);
+            register(applicationName);
+         } else {
+            LOGGER.config("Snoop is not configured correctly. Application name missing!");
          }
 
       } else {
