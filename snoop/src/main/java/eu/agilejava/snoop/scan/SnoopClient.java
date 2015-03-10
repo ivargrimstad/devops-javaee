@@ -23,13 +23,13 @@
  */
 package eu.agilejava.snoop.scan;
 
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
-import java.util.logging.Level;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -40,7 +40,6 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
-import javax.json.stream.JsonParser;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
@@ -130,33 +129,20 @@ public class SnoopClient {
 
       if (SnoopExtensionHelper.isSnoopEnabled()) {
 
-         String applicationName = SnoopExtensionHelper.getApplicationName();
+         Yaml yaml = new Yaml();
+         Map<String, Object> props = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/application.yml"));
 
-         try {
+         Map<String, String> snoopConfig = (Map<String, String>) props.get("snoop");
 
-            YAMLFactory factory = new YAMLFactory();
-            YAMLParser parser = factory.createParser(this.getClass().getResource("/application.yml"));
-
-            while (parser.nextToken() != null) {
-
-               if (parser.getCurrentName() != null
-                       && parser.getCurrentName().equals("applicationName")
-                       && parser.getValueAsString() != null) {
-
-                  applicationName = parser.getValueAsString();
-                  System.out.println("application name: " + applicationName);
-               }
-            }
-
-         } catch (IOException ex) {
-            LOGGER.severe(ex.getMessage());
-         }
+         String applicationName = snoopConfig.get("applicationName");
+         System.out.println("application name: " + applicationName);
 
          if (applicationName != null) {
-            LOGGER.config("Registering " + applicationName);
+            LOGGER.config(() -> "Registering " + applicationName);
             register(applicationName);
          } else {
-            LOGGER.config("Snoop is not configured correctly. Application name missing!");
+            LOGGER.config(() -> "Registering with name from annotation: " + applicationName);
+            register(SnoopExtensionHelper.getApplicationName());
          }
 
       } else {
