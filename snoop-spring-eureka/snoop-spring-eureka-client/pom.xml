@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>eu.agilejava</groupId>
-   <artifactId>snoop-eureka-client</artifactId>
+   <artifactId>snoop-spring-eureka-client</artifactId>
    <version>1.0.0-SNAPSHOT</version>
    <packaging>jar</packaging>
 
-   <name>Snoop Eureka Client</name>
+   <name>Snoop Spring Eureka Client</name>
 
    <properties>
       <start-class>eu.agilejava.eureka.Application</start-class>
@@ -14,7 +14,7 @@
 
    <parent>
       <groupId>eu.agilejava</groupId>
-      <artifactId>snoop-eureka</artifactId>
+      <artifactId>snoop-spring-eureka</artifactId>
       <version>1.0.0-SNAPSHOT</version>
    </parent>
    
