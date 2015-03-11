@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Pivotal Software, Inc..
+ * Copyright 2015 Ivar Grimstad <ivar.grimstad@gmail.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,21 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.agilejava.eureka;
+package eu.agilejava.snoop.eureka.annotation;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Stereotype;
+import javax.enterprise.util.Nonbinding;
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@SpringBootApplication
-@EnableDiscoveryClient
-public class Application {
-
-   public static void main(String[] args) throws Exception {
-      SpringApplication.run(Application.class, args);
-   }
+@Stereotype
+@Retention(RUNTIME)
+@Documented
+@ApplicationScoped
+@Target(TYPE)
+public @interface EnableEurekaClient {
+   
+   @Nonbinding
+   String appicationName();
 }

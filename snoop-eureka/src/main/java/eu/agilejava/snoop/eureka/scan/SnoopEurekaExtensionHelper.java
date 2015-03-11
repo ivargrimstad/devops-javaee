@@ -21,4 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package eu.agilejava.eureka;
+package eu.agilejava.snoop.eureka.scan;
+
+/**
+ *
+ * @author Ivar Grimstad <ivar.grimstad@gmail.com>
+ */
+public final class SnoopEurekaExtensionHelper {
+
+   private String applicationName;
+   private boolean eurekaEnabled;
+   
+   private static final SnoopEurekaExtensionHelper INSTANCE = new SnoopEurekaExtensionHelper();
+   
+   public static String getApplicationName() {
+      return INSTANCE.applicationName;
+   }
+
+   public static void setApplicationName(String applicationName) {
+      INSTANCE.applicationName = applicationName;
+   }
+
+   public static boolean isSnoopEnabled() {
+      return INSTANCE.eurekaEnabled;
+   }
+   
+   public static void setSnoopEnabled(final boolean snoopEnabled) {
+      INSTANCE.eurekaEnabled = snoopEnabled;
+   }
+}

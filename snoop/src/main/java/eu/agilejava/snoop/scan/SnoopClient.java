@@ -23,8 +23,6 @@
  */
 package eu.agilejava.snoop.scan;
 
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.net.URI;
