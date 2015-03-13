@@ -1,2 +1,11 @@
 snoop:
    applicationName: snoopydemo
+
+server:
+   port: 8060
+   
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  

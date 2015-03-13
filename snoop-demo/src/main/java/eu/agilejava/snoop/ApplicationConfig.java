@@ -24,12 +24,15 @@
 package eu.agilejava.snoop;
 
 import eu.agilejava.snoop.annotation.EnableSnoopClient;
+import eu.agilejava.snoop.eureka.annotation.EnableEurekaClient;
+
 
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-@EnableSnoopClient(appicationName = "snoopy")
+@EnableSnoopClient(applicationName = "snoopysnoop")
+@EnableEurekaClient(applicationName = "snoopyeureka")
 public class ApplicationConfig {
    
 }
