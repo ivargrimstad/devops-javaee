@@ -45,20 +45,21 @@ public class SnoopScannerExtension implements Extension {
    private boolean snoopEnabled;
 
    void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
-      LOGGER.config("Beginning the scanning process");
+      LOGGER.config("Scanning for Snoop clients");
    }
 
    void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm) {
 
       SnoopExtensionHelper.setApplicationName(applicationName);
       SnoopExtensionHelper.setSnoopEnabled(snoopEnabled);
-      LOGGER.config("finished the scanning process");
+      LOGGER.config("Finished scanning for Snoop clients");
    }
 
-   <T> void processAnnotatedType(@Observes @WithAnnotations({EnableSnoopClient.class}) ProcessAnnotatedType<T> pat) {
+   <T> void processAnnotatedType(@Observes @WithAnnotations(EnableSnoopClient.class) ProcessAnnotatedType<T> pat) {
+
       LOGGER.config(() -> "Found @EnableSnoopClient annotated class: " + pat.getAnnotatedType().getJavaClass().getName());
       snoopEnabled = true;
-      applicationName = pat.getAnnotatedType().getAnnotation(EnableSnoopClient.class).appicationName();
-      LOGGER.config(() -> "Application name is: " + applicationName);
+      applicationName = pat.getAnnotatedType().getAnnotation(EnableSnoopClient.class).applicationName();
+      LOGGER.config(() -> "Snoop Application name is: " + applicationName);
    }
 }
