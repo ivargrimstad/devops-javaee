@@ -23,30 +23,25 @@
  */
 package eu.agilejava.snoop.eureka.scan;
 
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
-public final class SnoopEurekaExtensionHelper {
+@Singleton
+@Startup
+public class EurekaClient {
 
-   private String applicationName;
-   private boolean eurekaEnabled;
+   private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
    
-   private static final SnoopEurekaExtensionHelper INSTANCE = new SnoopEurekaExtensionHelper();
-   
-   public static String getApplicationName() {
-      return INSTANCE.applicationName;
-   }
+   @PostConstruct
+   private void init() {
 
-   public static void setApplicationName(String applicationName) {
-      INSTANCE.applicationName = applicationName;
-   }
-
-   public static boolean isEurekaEnabled() {
-      return INSTANCE.eurekaEnabled;
-   }
-   
-   public static void isEurekaEnabled(final boolean snoopEnabled) {
-      INSTANCE.eurekaEnabled = snoopEnabled;
+      LOGGER.config("Checking if snoop eureka is enabled");
+      LOGGER.config(() -> "YES: " + SnoopEurekaExtensionHelper.isEurekaEnabled());
    }
 }

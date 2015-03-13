@@ -39,26 +39,26 @@ import javax.enterprise.inject.spi.WithAnnotations;
  */
 public class SnoopEurekaScannerExtension implements Extension {
 
-   private static final Logger LOGGER = Logger.getLogger("eu.agilejava.eureka.snoop");
+   private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
 
    private String applicationName;
-   private boolean snoopEnabled;
+   private boolean eurekaEnabled;
 
    void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
-      LOGGER.config("Beginning the scanning process");
+      LOGGER.config("Scanning for Eureka clients");
    }
 
    void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm) {
 
       SnoopEurekaExtensionHelper.setApplicationName(applicationName);
-      SnoopEurekaExtensionHelper.setSnoopEnabled(snoopEnabled);
-      LOGGER.config("finished the scanning process");
+      SnoopEurekaExtensionHelper.isEurekaEnabled(eurekaEnabled);
+      LOGGER.config("Finished scanning for Eureka clients");
    }
 
-   <T> void processAnnotatedType(@Observes @WithAnnotations({EnableEurekaClient.class}) ProcessAnnotatedType<T> pat) {
+   <T> void processAnnotatedType(@Observes @WithAnnotations(EnableEurekaClient.class) ProcessAnnotatedType<T> pat) {
       LOGGER.config(() -> "Found @EnableEurekaClient annotated class: " + pat.getAnnotatedType().getJavaClass().getName());
-      snoopEnabled = true;
-      applicationName = pat.getAnnotatedType().getAnnotation(EnableEurekaClient.class).appicationName();
-      LOGGER.config(() -> "Application name is: " + applicationName);
+      eurekaEnabled = true;
+      applicationName = pat.getAnnotatedType().getAnnotation(EnableEurekaClient.class).applicationName();
+      LOGGER.config(() -> "Eureka application name is: " + applicationName);
    }
 }

@@ -45,5 +45,5 @@ import javax.enterprise.util.Nonbinding;
 public @interface EnableEurekaClient {
    
    @Nonbinding
-   String appicationName();
+   String applicationName() default "unknown";
 }
