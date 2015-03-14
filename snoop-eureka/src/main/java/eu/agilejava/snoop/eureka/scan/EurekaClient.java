@@ -27,6 +27,11 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -37,11 +42,35 @@ import javax.ejb.Startup;
 public class EurekaClient {
 
    private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
-   
+
    @PostConstruct
    private void init() {
 
       LOGGER.config("Checking if snoop eureka is enabled");
       LOGGER.config(() -> "YES: " + SnoopEurekaExtensionHelper.isEurekaEnabled());
+
+      Client eurekaClient = ClientBuilder.newClient();
+
+      EurekaConfig eurekaConfig = new EurekaConfig();
+      eurekaConfig.setHostName("localhost");
+      eurekaConfig.setApp("SNOOP");
+      eurekaConfig.setIpAddr("192.168.1.71");
+      eurekaConfig.setPort(8080);
+      eurekaConfig.setVipAddress("");
+      eurekaConfig.setSecureVipAddress("");
+      eurekaConfig.setStatus("UP");
+      eurekaConfig.setSecurePort(443);
+      eurekaConfig.setHomePageUrl("http://www.vg.no");
+      eurekaConfig.setStatusPageUrl("http://www.vg.no");
+      eurekaConfig.setHealthCheckUrl("http://www.vg.no");
+      eurekaConfig.setDataCenterInfo(new DataCenterInfo());
+
+      Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
+      LOGGER.config(() -> "Entity: " + entity.toString());
+      Response response = eurekaClient.target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName())
+              .request()
+              .post(entity);
+
+      LOGGER.config(() -> "POST resulted in: " + response.getStatus() + ", " + response.getEntity());
    }
 }
