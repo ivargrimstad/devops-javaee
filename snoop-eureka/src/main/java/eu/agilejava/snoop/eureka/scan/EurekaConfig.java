@@ -23,14 +23,12 @@
  */
 package eu.agilejava.snoop.eureka.scan;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  *
  * @author Ivar Grimstad <ivar.grimstad@gmail.com>
  */
 public class EurekaConfig {
-   
+
    private String hostName;
    private String app;
    private String ipAddr;
@@ -43,25 +41,13 @@ public class EurekaConfig {
    private String statusPageUrl;
    private String healthCheckUrl;
    private DataCenterInfo dataCenterInfo;
-   
-   
-//   {
-//   "instance": {
-//      "hostName":"localhost",
-//      "app": "SNOOP",
-//      "ipAddr": "192.168.1.71",
-//      "port":"8080",
-//      "vipAddress":"",
-//      "secureVipAddress":"",
-//      "status": "UP",
-//      "securePort":"443",
-//     "homePageUrl":"http://www.vg.no",
-//     "statusPageUrl":"http://www.vg.no",
-//      "healthCheckUrl":"http://www.vg.no",
-//      "dataCenterInfo": {
-//         "name": "MyOwn"
-//      },
-//   }
+
+   public class DataCenterInfo {
+
+      public String getName() {
+         return "MyOwn";
+      }
+   }
 
    public String getHostName() {
       return hostName;
@@ -152,11 +138,6 @@ public class EurekaConfig {
    }
 
    public DataCenterInfo getDataCenterInfo() {
-      return dataCenterInfo;
-   }
-
-   public void setDataCenterInfo(DataCenterInfo dataCenterInfo) {
-      this.dataCenterInfo = dataCenterInfo;
+      return new DataCenterInfo();
    }
 }
-   

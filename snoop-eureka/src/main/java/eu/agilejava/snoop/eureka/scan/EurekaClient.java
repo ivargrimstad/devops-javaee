@@ -23,10 +23,18 @@
  */
 package eu.agilejava.snoop.eureka.scan;
 
+import java.util.Calendar;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+import javax.ejb.ScheduleExpression;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
+import javax.ejb.TimerService;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -43,17 +51,19 @@ public class EurekaClient {
 
    private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
 
-   @PostConstruct
-   private void init() {
+   @Resource
+   private TimerService timerService;
 
-      LOGGER.config("Checking if snoop eureka is enabled");
-      LOGGER.config(() -> "YES: " + SnoopEurekaExtensionHelper.isEurekaEnabled());
+   @Timeout
+   public void health(Timer timer) {
+      LOGGER.info(() -> "health update: " + Calendar.getInstance().getTime());
+      LOGGER.info(() -> "Next: " + timer.getNextTimeout());
 
       Client eurekaClient = ClientBuilder.newClient();
 
       EurekaConfig eurekaConfig = new EurekaConfig();
       eurekaConfig.setHostName("localhost");
-      eurekaConfig.setApp("SNOOP");
+      eurekaConfig.setApp(SnoopEurekaExtensionHelper.getApplicationName());
       eurekaConfig.setIpAddr("192.168.1.71");
       eurekaConfig.setPort(8080);
       eurekaConfig.setVipAddress("");
@@ -63,14 +73,71 @@ public class EurekaClient {
       eurekaConfig.setHomePageUrl("http://www.vg.no");
       eurekaConfig.setStatusPageUrl("http://www.vg.no");
       eurekaConfig.setHealthCheckUrl("http://www.vg.no");
-      eurekaConfig.setDataCenterInfo(new DataCenterInfo());
-
       Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
-      LOGGER.config(() -> "Entity: " + entity.toString());
-      Response response = eurekaClient.target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName())
-              .request()
-              .post(entity);
 
-      LOGGER.config(() -> "POST resulted in: " + response.getStatus() + ", " + response.getEntity());
+      Response response = eurekaClient.target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName() + "/localhost")
+              .request()
+              .put(entity);
+
+      LOGGER.config(() -> "PUT resulted in: " + response.getStatus() + ", " + response.getEntity());
+
+   }
+
+   @PostConstruct
+   private void init() {
+
+      LOGGER.config("Checking if snoop eureka is enabled");
+      LOGGER.config(() -> "YES: " + SnoopEurekaExtensionHelper.isEurekaEnabled());
+
+      if (SnoopEurekaExtensionHelper.isEurekaEnabled()) {
+
+         Client eurekaClient = ClientBuilder.newClient();
+
+         EurekaConfig eurekaConfig = new EurekaConfig();
+         eurekaConfig.setHostName("localhost");
+         eurekaConfig.setApp(SnoopEurekaExtensionHelper.getApplicationName());
+         eurekaConfig.setIpAddr("192.168.1.71");
+         eurekaConfig.setPort(8080);
+         eurekaConfig.setVipAddress("");
+         eurekaConfig.setSecureVipAddress("");
+         eurekaConfig.setStatus("UP");
+         eurekaConfig.setSecurePort(443);
+         eurekaConfig.setHomePageUrl("http://www.vg.no");
+         eurekaConfig.setStatusPageUrl("http://www.vg.no");
+         eurekaConfig.setHealthCheckUrl("http://www.vg.no");
+
+         Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
+         LOGGER.config(() -> "Entity: " + entity.toString());
+         Response response = eurekaClient.target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName())
+                 .request()
+                 .post(entity);
+
+         LOGGER.config(() -> "POST resulted in: " + response.getStatus() + ", " + response.getEntity());
+
+         ScheduleExpression schedule = new ScheduleExpression();
+         schedule.second("*/10").minute("*").hour("*").start(Calendar.getInstance().getTime());
+
+         TimerConfig config = new TimerConfig();
+         config.setPersistent(false);
+
+         Timer timer = timerService.createCalendarTimer(schedule, config);
+
+         LOGGER.config(() -> timer.getSchedule().toString());
+
+      } else {
+         LOGGER.config("Snoop Eureka is not enabled. Use @EnableEurekaClient!");
+      }
+   }
+
+   @PreDestroy
+   public void deregister() {
+      Client eurekaClient = ClientBuilder.newClient();
+
+      Response response = eurekaClient.target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName() + "/localhost")
+              .request()
+              .delete();
+
+      LOGGER.config(() -> "DELETE resulted in: " + response.getStatus() + ", " + response.getEntity());
+
    }
 }
