@@ -76,8 +76,8 @@ public class SnoopClient {
 
    @Timeout
    public void resend(Timer timer) {
-      LOGGER.info(() -> "health update: " + Calendar.getInstance().getTime());
-      LOGGER.info(() -> "Next: " + timer.getNextTimeout());
+      LOGGER.config(() -> "health update: " + Calendar.getInstance().getTime());
+      LOGGER.config(() -> "Next: " + timer.getNextTimeout());
       sendMessage("snoopstatus/snoopy", "UP");
    }
 
@@ -90,7 +90,7 @@ public class SnoopClient {
     */
    private String sendMessage(String endpoint, String msg) {
 
-      LOGGER.info("Sending message!");
+      LOGGER.config("Sending message!");
 
       String returnValue = "-1";
       try {
@@ -116,7 +116,7 @@ public class SnoopClient {
     */
    @OnMessage
    public void onMessage(Session session, String message) {
-      LOGGER.info(() -> "Message: " + message);
+      LOGGER.config(() -> "Message: " + message);
       sendMessage("snoopstatus/snoopy", "UP");
    }
 

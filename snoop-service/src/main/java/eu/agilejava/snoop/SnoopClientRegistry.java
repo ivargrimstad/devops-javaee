@@ -24,9 +24,9 @@
 package eu.agilejava.snoop;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.ejb.Singleton;
 
@@ -37,16 +37,18 @@ import javax.ejb.Singleton;
 @Singleton
 public class SnoopClientRegistry {
 
+   private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
+
    private final Map<String, Long> clients = new HashMap<>();
 
-   public void register( final String clientId) {
+   public void register(final String clientId) {
       clients.put(clientId, System.currentTimeMillis());
-      
-      System.out.println("Client: " + clientId + " registered up at " + clients.get(clientId));
+
+      LOGGER.config(() -> "Client: " + clientId + " registered up at " + clients.get(clientId));
    }
-   
+
    public Set<String> getClients() {
-  
+
       return clients.keySet().stream()
               .filter(c -> clients.get(c) > System.currentTimeMillis() - 10000)
               .collect(Collectors.toSet());

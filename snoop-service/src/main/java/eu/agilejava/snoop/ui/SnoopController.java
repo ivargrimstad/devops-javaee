@@ -25,6 +25,7 @@ package eu.agilejava.snoop.ui;
 
 import eu.agilejava.snoop.SnoopClientRegistry;
 import java.util.Set;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -36,12 +37,13 @@ import javax.inject.Named;
 @RequestScoped
 @Named
 public class SnoopController {
-   
+
+   private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
+
    @EJB
    private SnoopClientRegistry clients;
-   
+
    public Set<String> getClients() {
-      System.out.println("returning");
       return clients.getClients();
    }
 }

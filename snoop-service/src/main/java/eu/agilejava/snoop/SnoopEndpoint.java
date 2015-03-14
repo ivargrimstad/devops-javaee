@@ -23,6 +23,7 @@
  */
 package eu.agilejava.snoop;
 
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.websocket.OnMessage;
@@ -36,14 +37,16 @@ import javax.websocket.server.ServerEndpoint;
 @Stateless
 public class SnoopEndpoint {
 
+   private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
+
    @EJB
    private SnoopClientRegistry clients;
-   
+
    @OnMessage
    public String onMessage(String message) {
-      System.out.println("Schnooooopppy!!!");
+      LOGGER.config("Schnooooopppy!!!");
       clients.register(message);
       return "snoopstatus/" + message;
    }
-   
+
 }

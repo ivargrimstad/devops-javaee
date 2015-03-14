@@ -55,8 +55,8 @@ public class EurekaClient {
 
    @Timeout
    public void health(Timer timer) {
-      LOGGER.info(() -> "health update: " + Calendar.getInstance().getTime());
-      LOGGER.info(() -> "Next: " + timer.getNextTimeout());
+      LOGGER.config(() -> "health update: " + Calendar.getInstance().getTime());
+      LOGGER.config(() -> "Next: " + timer.getNextTimeout());
 
       EurekaConfig eurekaConfig = new EurekaConfig();
       eurekaConfig.setStatus("UP");
