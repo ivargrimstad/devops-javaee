@@ -35,7 +35,6 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -59,23 +58,12 @@ public class EurekaClient {
       LOGGER.info(() -> "health update: " + Calendar.getInstance().getTime());
       LOGGER.info(() -> "Next: " + timer.getNextTimeout());
 
-      Client eurekaClient = ClientBuilder.newClient();
-
       EurekaConfig eurekaConfig = new EurekaConfig();
-      eurekaConfig.setHostName("localhost");
-      eurekaConfig.setApp(SnoopEurekaExtensionHelper.getApplicationName());
-      eurekaConfig.setIpAddr("192.168.1.71");
-      eurekaConfig.setPort(8080);
-      eurekaConfig.setVipAddress("");
-      eurekaConfig.setSecureVipAddress("");
       eurekaConfig.setStatus("UP");
-      eurekaConfig.setSecurePort(443);
-      eurekaConfig.setHomePageUrl("http://www.vg.no");
-      eurekaConfig.setStatusPageUrl("http://www.vg.no");
-      eurekaConfig.setHealthCheckUrl("http://www.vg.no");
       Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
 
-      Response response = eurekaClient.target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName() + "/localhost")
+      Response response = ClientBuilder.newClient()
+              .target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName() + "/localhost")
               .request()
               .put(entity);
 
@@ -91,8 +79,6 @@ public class EurekaClient {
 
       if (SnoopEurekaExtensionHelper.isEurekaEnabled()) {
 
-         Client eurekaClient = ClientBuilder.newClient();
-
          EurekaConfig eurekaConfig = new EurekaConfig();
          eurekaConfig.setHostName("localhost");
          eurekaConfig.setApp(SnoopEurekaExtensionHelper.getApplicationName());
@@ -105,10 +91,10 @@ public class EurekaClient {
          eurekaConfig.setHomePageUrl("http://www.vg.no");
          eurekaConfig.setStatusPageUrl("http://www.vg.no");
          eurekaConfig.setHealthCheckUrl("http://www.vg.no");
-
          Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
-         LOGGER.config(() -> "Entity: " + entity.toString());
-         Response response = eurekaClient.target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName())
+         
+         Response response = ClientBuilder.newClient()
+                 .target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName())
                  .request()
                  .post(entity);
 
@@ -131,9 +117,9 @@ public class EurekaClient {
 
    @PreDestroy
    public void deregister() {
-      Client eurekaClient = ClientBuilder.newClient();
 
-      Response response = eurekaClient.target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName() + "/localhost")
+      Response response = ClientBuilder.newClient()
+              .target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName() + "/localhost")
               .request()
               .delete();
 
