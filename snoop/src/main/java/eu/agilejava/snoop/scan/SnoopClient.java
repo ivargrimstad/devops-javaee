@@ -56,12 +56,17 @@ public class SnoopClient {
 
    private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
    private static final String BASE_URI = "ws://localhost:8080/snoop-service/";
+   private static final String REGISTER_ENDPOINT = "snoop";
+   private static final String STATUS_ENDPOINT = "snoopstatus/";
 
+   private String serviceUrl;
+   private String applicationName;
+   
    @Resource
    private TimerService timerService;
 
    public void register(final String clientId) {
-      sendMessage("snoop", clientId);
+      sendMessage(REGISTER_ENDPOINT, clientId);
 
       ScheduleExpression schedule = new ScheduleExpression();
       schedule.second("*/10").minute("*").hour("*").start(Calendar.getInstance().getTime());
@@ -78,7 +83,7 @@ public class SnoopClient {
    public void resend(Timer timer) {
       LOGGER.config(() -> "health update: " + Calendar.getInstance().getTime());
       LOGGER.config(() -> "Next: " + timer.getNextTimeout());
-      sendMessage("snoopstatus/snoopy", "UP");
+      sendMessage( STATUS_ENDPOINT + applicationName, "UP");
    }
 
    /**
@@ -95,11 +100,10 @@ public class SnoopClient {
       String returnValue = "-1";
       try {
          WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-         String uri = BASE_URI + endpoint;
+         String uri = serviceUrl + endpoint;
          Session session = container.connectToServer(this, URI.create(uri));
          session.getBasicRemote().sendText(msg != null ? msg : "");
          returnValue = session.getId();
-         System.out.println(returnValue);
 
       } catch (DeploymentException | IOException ex) {
          LOGGER.warning(ex.getMessage());
@@ -117,7 +121,7 @@ public class SnoopClient {
    @OnMessage
    public void onMessage(Session session, String message) {
       LOGGER.config(() -> "Message: " + message);
-      sendMessage("snoopstatus/snoopy", "UP");
+      sendMessage( STATUS_ENDPOINT + applicationName, "UP");
    }
 
    @PostConstruct
@@ -132,9 +136,11 @@ public class SnoopClient {
 
          Map<String, String> snoopConfig = (Map<String, String>) props.get("snoop");
 
-         String applicationName = snoopConfig.get("applicationName");
-         System.out.println("application name: " + applicationName);
-
+         applicationName = snoopConfig.get("applicationName");
+         LOGGER.config(() -> "application name: " + applicationName);
+         
+         serviceUrl = snoopConfig.get("serviceUrl") != null ? snoopConfig.get("serviceUrl") : BASE_URI;
+         
          if (applicationName != null) {
             LOGGER.config(() -> "Registering " + applicationName);
             register(applicationName);

@@ -44,7 +44,7 @@ public class SnoopEndpoint {
 
    @OnMessage
    public String onMessage(String message) {
-      LOGGER.config("Schnooooopppy!!!");
+      LOGGER.config(() -> "Registering: " + message);
       clients.register(message);
       return "snoopstatus/" + message;
    }
