@@ -104,13 +104,8 @@ public class EurekaClient {
          eurekaConfig.setApp(applicationName);
          eurekaConfig.setIpAddr("localhost");
          eurekaConfig.setPort(8080);
-         eurekaConfig.setVipAddress("");
-         eurekaConfig.setSecureVipAddress("");
          eurekaConfig.setStatus("UP");
-         eurekaConfig.setSecurePort(443);
          eurekaConfig.setHomePageUrl("http://localhost:8080/snoopy-demo/");
-         eurekaConfig.setStatusPageUrl("http://localhost:8080/snoop-demo/");
-         eurekaConfig.setHealthCheckUrl("http://localhost:8080/snoop-demo/");
          Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
 
          Response response = ClientBuilder.newClient()
@@ -144,6 +139,5 @@ public class EurekaClient {
               .delete();
 
       LOGGER.config(() -> "DELETE resulted in: " + response.getStatus() + ", " + response.getEntity());
-
    }
 }
