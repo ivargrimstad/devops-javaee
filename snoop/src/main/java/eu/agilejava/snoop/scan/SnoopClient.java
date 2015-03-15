@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.ScheduleExpression;
 import javax.ejb.Singleton;
@@ -144,6 +145,13 @@ public class SnoopClient {
       } else {
          LOGGER.config("Snoop is not enabled. Use @EnableSnoopClient!");
       }
+   }
+
+   @PreDestroy
+   private void deregister() {
+
+      LOGGER.config(() -> "Deregistering " + applicationName);
+        sendMessage(STATUS_ENDPOINT + applicationName, "OUT_OF_SERVICE");
    }
 
    private void readProperties() {

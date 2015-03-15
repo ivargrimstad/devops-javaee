@@ -47,10 +47,16 @@ public class SnoopClientRegistry {
       LOGGER.config(() -> "Client: " + clientId + " registered up at " + clients.get(clientId));
    }
 
+   public void deRegister(final String clientId) {
+      clients.remove(clientId);
+
+      LOGGER.config(() -> "Client: " + clientId + " deregistered at " + System.currentTimeMillis());
+   }
+
    public Set<String> getClients() {
 
       return clients.keySet().stream()
-              .filter(c -> clients.get(c) > System.currentTimeMillis() - 10000)
+              .filter(c -> clients.get(c) > System.currentTimeMillis() - 60000)
               .collect(Collectors.toSet());
    }
 }
