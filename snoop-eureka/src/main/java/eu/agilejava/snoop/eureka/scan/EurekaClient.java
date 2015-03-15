@@ -85,19 +85,7 @@ public class EurekaClient {
 
       if (SnoopEurekaExtensionHelper.isEurekaEnabled()) {
 
-         Yaml yaml = new Yaml();
-         Map<String, Object> props = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/application.yml"));
-
-         Map<String, String> snoopConfig = (Map<String, String>) props.get("snoop");
-
-         applicationName = snoopConfig.get("applicationName");
-         LOGGER.config(() -> "application name: " + applicationName);
-         
-         Map<String, Object> eurekaProps = (Map<String, Object>) props.get("eureka");
-         Map<String, Object> eurekaClientProps = (Map<String, Object>) eurekaProps.get("client");
-         Map<String, String> eurekaServiceProps = (Map<String, String>) eurekaClientProps.get("serviceUrl");
-
-         serviceUrl = eurekaServiceProps.get("deafaultZone") != null ? snoopConfig.get("defaultZone") : BASE_URI;
+         readProperties();
 
          EurekaConfig eurekaConfig = new EurekaConfig();
          eurekaConfig.setHostName(applicationName);
@@ -131,7 +119,7 @@ public class EurekaClient {
    }
 
    @PreDestroy
-   public void deregister() {
+   private void deregister() {
 
       Response response = ClientBuilder.newClient()
               .target(serviceUrl + "apps/" + applicationName + "/" + applicationName)
@@ -140,4 +128,21 @@ public class EurekaClient {
 
       LOGGER.config(() -> "DELETE resulted in: " + response.getStatus() + ", " + response.getEntity());
    }
+
+   private void readProperties() {
+      Yaml yaml = new Yaml();
+      Map<String, Object> props = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/application.yml"));
+
+      Map<String, String> snoopConfig = (Map<String, String>) props.get("snoop");
+
+      applicationName = snoopConfig.get("applicationName");
+      LOGGER.config(() -> "application name: " + applicationName);
+
+      Map<String, Object> eurekaProps = (Map<String, Object>) props.get("eureka");
+      Map<String, Object> eurekaClientProps = (Map<String, Object>) eurekaProps.get("client");
+      Map<String, String> eurekaServiceProps = (Map<String, String>) eurekaClientProps.get("serviceUrl");
+
+      serviceUrl = eurekaServiceProps.get("deafaultZone") != null ? snoopConfig.get("defaultZone") : BASE_URI;
+   }
+
 }

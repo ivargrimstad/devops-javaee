@@ -61,7 +61,7 @@ public class SnoopClient {
 
    private String serviceUrl;
    private String applicationName;
-   
+
    @Resource
    private TimerService timerService;
 
@@ -83,7 +83,7 @@ public class SnoopClient {
    public void resend(Timer timer) {
       LOGGER.config(() -> "health update: " + Calendar.getInstance().getTime());
       LOGGER.config(() -> "Next: " + timer.getNextTimeout());
-      sendMessage( STATUS_ENDPOINT + applicationName, "UP");
+      sendMessage(STATUS_ENDPOINT + applicationName, "UP");
    }
 
    /**
@@ -121,7 +121,7 @@ public class SnoopClient {
    @OnMessage
    public void onMessage(Session session, String message) {
       LOGGER.config(() -> "Message: " + message);
-      sendMessage( STATUS_ENDPOINT + applicationName, "UP");
+      sendMessage(STATUS_ENDPOINT + applicationName, "UP");
    }
 
    @PostConstruct
@@ -131,16 +131,8 @@ public class SnoopClient {
 
       if (SnoopExtensionHelper.isSnoopEnabled()) {
 
-         Yaml yaml = new Yaml();
-         Map<String, Object> props = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/application.yml"));
+         readProperties();
 
-         Map<String, String> snoopConfig = (Map<String, String>) props.get("snoop");
-
-         applicationName = snoopConfig.get("applicationName");
-         LOGGER.config(() -> "application name: " + applicationName);
-         
-         serviceUrl = snoopConfig.get("serviceUrl") != null ? snoopConfig.get("serviceUrl") : BASE_URI;
-         
          if (applicationName != null) {
             LOGGER.config(() -> "Registering " + applicationName);
             register(applicationName);
@@ -154,4 +146,15 @@ public class SnoopClient {
       }
    }
 
+   private void readProperties() {
+      Yaml yaml = new Yaml();
+      Map<String, Object> props = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/application.yml"));
+
+      Map<String, String> snoopConfig = (Map<String, String>) props.get("snoop");
+
+      applicationName = snoopConfig.get("applicationName");
+      LOGGER.config(() -> "application name: " + applicationName);
+
+      serviceUrl = snoopConfig.get("serviceUrl") != null ? snoopConfig.get("serviceUrl") : BASE_URI;
+   }
 }
