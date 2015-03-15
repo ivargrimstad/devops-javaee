@@ -23,7 +23,9 @@
  */
 package eu.agilejava.snoop.eureka.scan;
 
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.Yaml;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -49,6 +51,10 @@ import javax.ws.rs.core.Response;
 public class EurekaClient {
 
    private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
+   private static final String BASE_URI = "http://localhost:8761/eureka/";
+
+   private String applicationName;
+   private String serviceUrl;
 
    @Resource
    private TimerService timerService;
@@ -63,7 +69,7 @@ public class EurekaClient {
       Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
 
       Response response = ClientBuilder.newClient()
-              .target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName() + "/localhost")
+              .target(serviceUrl + "apps/" + applicationName + "/" + applicationName)
               .request()
               .put(entity);
 
@@ -79,22 +85,36 @@ public class EurekaClient {
 
       if (SnoopEurekaExtensionHelper.isEurekaEnabled()) {
 
+         Yaml yaml = new Yaml();
+         Map<String, Object> props = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/application.yml"));
+
+         Map<String, String> snoopConfig = (Map<String, String>) props.get("snoop");
+
+         applicationName = snoopConfig.get("applicationName");
+         LOGGER.config(() -> "application name: " + applicationName);
+         
+         Map<String, Object> eurekaProps = (Map<String, Object>) props.get("eureka");
+         Map<String, Object> eurekaClientProps = (Map<String, Object>) eurekaProps.get("client");
+         Map<String, String> eurekaServiceProps = (Map<String, String>) eurekaClientProps.get("serviceUrl");
+
+         serviceUrl = eurekaServiceProps.get("deafaultZone") != null ? snoopConfig.get("defaultZone") : BASE_URI;
+
          EurekaConfig eurekaConfig = new EurekaConfig();
-         eurekaConfig.setHostName("localhost");
-         eurekaConfig.setApp(SnoopEurekaExtensionHelper.getApplicationName());
-         eurekaConfig.setIpAddr("192.168.1.71");
+         eurekaConfig.setHostName(applicationName);
+         eurekaConfig.setApp(applicationName);
+         eurekaConfig.setIpAddr("localhost");
          eurekaConfig.setPort(8080);
          eurekaConfig.setVipAddress("");
          eurekaConfig.setSecureVipAddress("");
          eurekaConfig.setStatus("UP");
          eurekaConfig.setSecurePort(443);
-         eurekaConfig.setHomePageUrl("http://www.vg.no");
-         eurekaConfig.setStatusPageUrl("http://www.vg.no");
-         eurekaConfig.setHealthCheckUrl("http://www.vg.no");
+         eurekaConfig.setHomePageUrl("http://localhost:8080/snoopy-demo/");
+         eurekaConfig.setStatusPageUrl("http://localhost:8080/snoop-demo/");
+         eurekaConfig.setHealthCheckUrl("http://localhost:8080/snoop-demo/");
          Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
-         
+
          Response response = ClientBuilder.newClient()
-                 .target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName())
+                 .target(serviceUrl + "apps/" + applicationName)
                  .request()
                  .post(entity);
 
@@ -119,7 +139,7 @@ public class EurekaClient {
    public void deregister() {
 
       Response response = ClientBuilder.newClient()
-              .target("http://localhost:8761/eureka/apps/" + SnoopEurekaExtensionHelper.getApplicationName() + "/localhost")
+              .target(serviceUrl + "apps/" + applicationName + "/" + applicationName)
               .request()
               .delete();
 
