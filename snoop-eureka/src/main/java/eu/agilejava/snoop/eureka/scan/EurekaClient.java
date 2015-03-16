@@ -56,7 +56,8 @@ public class EurekaClient {
 
    private String applicationName;
    private String serviceUrl;
-
+   private String applicationHome;
+   
    @Resource
    private TimerService timerService;
 
@@ -94,7 +95,7 @@ public class EurekaClient {
          eurekaConfig.setIpAddr("localhost");
          eurekaConfig.setPort(8080);
          eurekaConfig.setStatus("UP");
-         eurekaConfig.setHomePageUrl("http://localhost:8080/snoopy-demo/");
+         eurekaConfig.setHomePageUrl(applicationHome);
          Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
 
          Response response = ClientBuilder.newClient()
@@ -137,13 +138,14 @@ public class EurekaClient {
       Map<String, String> snoopConfig = (Map<String, String>) props.get("snoop");
 
       applicationName = snoopConfig.get("applicationName");
-      LOGGER.config(() -> "application name: " + applicationName);
+      applicationHome = snoopConfig.get("applicationHome");
 
+      LOGGER.config(() -> "application name: " + applicationName);
+      
       Map<String, Object> eurekaProps = (Map<String, Object>) props.get("eureka");
       Map<String, Object> eurekaClientProps = (Map<String, Object>) eurekaProps.get("client");
       Map<String, String> eurekaServiceProps = (Map<String, String>) eurekaClientProps.get("serviceUrl");
 
       serviceUrl = eurekaServiceProps.get("deafaultZone") != null ? snoopConfig.get("defaultZone") : DEFAULT_SERVICE_URI;
    }
-
 }
