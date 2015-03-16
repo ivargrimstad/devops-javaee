@@ -28,8 +28,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 /**
- *
- * @author Ivar Grimstad <ivar.grimstad@gmail.com>
+ * Eureka Client.
+ * The simplest there is.
+ * 
+ * @author Ivar Grimstad (ivar.grimstad@gmail.com)
  */
 @SpringBootApplication
 @EnableEurekaClient

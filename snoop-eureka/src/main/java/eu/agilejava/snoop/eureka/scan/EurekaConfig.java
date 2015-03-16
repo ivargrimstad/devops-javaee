@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Ivar Grimstad <ivar.grimstad@gmail.com>.
+ * Copyright 2015 Ivar Grimstad (ivar.grimstad@gmail.com).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,9 @@
 package eu.agilejava.snoop.eureka.scan;
 
 /**
- *
- * @author Ivar Grimstad <ivar.grimstad@gmail.com>
+ * Eureka client configuration.
+ * 
+ * @author Ivar Grimstad (ivar.grimstad@gmail.com)
  */
 public class EurekaConfig {
 

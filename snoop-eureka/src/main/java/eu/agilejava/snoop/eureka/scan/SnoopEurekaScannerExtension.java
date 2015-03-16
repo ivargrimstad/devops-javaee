@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Ivar Grimstad <ivar.grimstad@gmail.com>.
+ * Copyright 2015 Ivar Grimstad (ivar.grimstad@gmail.com).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,9 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.WithAnnotations;
 
 /**
- *
- * @author Ivar Grimstad <ivar.grimstad@gmail.com>
+ * CDI Extension that scans for @EnableEurkeaClient annotations.
+ * 
+ * @author Ivar Grimstad (ivar.grimstad@gmail.com)
  */
 public class SnoopEurekaScannerExtension implements Extension {
 

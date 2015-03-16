@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Ivar Grimstad <ivar.grimstad@gmail.com>.
+ * Copyright 2015 Ivar Grimstad (ivar.grimstad@gmail.com).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,15 +43,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- *
- * @author Ivar Grimstad <ivar.grimstad@gmail.com>
+ * Registers with Eureka and gives heartbeats every 10 second.
+ * 
+ * @author Ivar Grimstad (ivar.grimstad@gmail.com)
  */
 @Singleton
 @Startup
 public class EurekaClient {
 
    private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
-   private static final String BASE_URI = "http://localhost:8761/eureka/";
+   private static final String DEFAULT_SERVICE_URI = "http://localhost:8761/eureka/";
 
    private String applicationName;
    private String serviceUrl;
@@ -142,7 +143,7 @@ public class EurekaClient {
       Map<String, Object> eurekaClientProps = (Map<String, Object>) eurekaProps.get("client");
       Map<String, String> eurekaServiceProps = (Map<String, String>) eurekaClientProps.get("serviceUrl");
 
-      serviceUrl = eurekaServiceProps.get("deafaultZone") != null ? snoopConfig.get("defaultZone") : BASE_URI;
+      serviceUrl = eurekaServiceProps.get("deafaultZone") != null ? snoopConfig.get("defaultZone") : DEFAULT_SERVICE_URI;
    }
 
 }

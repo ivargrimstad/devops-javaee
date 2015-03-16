@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Ivar Grimstad <ivar.grimstad@gmail.com>.
+ * Copyright 2015 Ivar Grimstad (ivar.grimstad@gmail.com).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,10 @@ import javax.enterprise.inject.Stereotype;
 import javax.enterprise.util.Nonbinding;
 
 /**
- *
- * @author Ivar Grimstad <ivar.grimstad@gmail.com>
+ * Annotation for enabling application as Eureka client.
+ * Use this annotation to register the application (service) with Eureka.
+ * 
+ * @author Ivar Grimstad (ivar.grimstad@gmail.com)
  */
 @Stereotype
 @Retention(RUNTIME)

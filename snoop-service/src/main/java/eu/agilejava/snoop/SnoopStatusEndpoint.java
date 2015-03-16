@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Ivar Grimstad <ivar.grimstad@gmail.com>.
+ * Copyright 2015 Ivar Grimstad (ivar.grimstad@gmail.com).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,8 +31,9 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 /**
- *
- * @author Ivar Grimstad <ivar.grimstad@gmail.com>
+ * WebSocket endpoint for heartbeats.
+ * 
+ * @author Ivar Grimstad (ivar.grimstad@gmail.com)
  */
 @ServerEndpoint("/snoopstatus/{clientId}")
 @Stateless
