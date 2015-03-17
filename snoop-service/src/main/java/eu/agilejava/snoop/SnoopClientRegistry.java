@@ -23,6 +23,8 @@
  */
 package eu.agilejava.snoop;
 
+import java.util.Calendar;
+import static java.util.Calendar.getInstance;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -44,15 +46,16 @@ public class SnoopClientRegistry {
    private final Map<String, Long> clients = new HashMap<>();
 
    public void register(final String clientId) {
-      clients.put(clientId, System.currentTimeMillis());
+      Calendar now = getInstance();
+      clients.put(clientId, now.getTimeInMillis());
 
-      LOGGER.config(() -> "Client: " + clientId + " registered up at " + clients.get(clientId));
+      LOGGER.config(() -> "Client: " + clientId + " registered up at " + now.getTime());
    }
 
    public void deRegister(final String clientId) {
       clients.remove(clientId);
 
-      LOGGER.config(() -> "Client: " + clientId + " deregistered at " + System.currentTimeMillis());
+      LOGGER.config(() -> "Client: " + clientId + " deregistered at " + Calendar.getInstance().getTime());
    }
 
    public Set<String> getClients() {
