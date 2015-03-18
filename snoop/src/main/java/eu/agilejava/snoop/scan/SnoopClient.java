@@ -97,7 +97,7 @@ public class SnoopClient {
     */
    private String sendMessage(String endpoint, String msg) {
 
-      LOGGER.config("Sending message!");
+      LOGGER.config(() -> "Sending message: " + msg);
 
       String returnValue = "-1";
       try {
