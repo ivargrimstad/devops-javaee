@@ -57,7 +57,7 @@ import javax.websocket.WebSocketContainer;
 public class SnoopClient {
 
    private static final Logger LOGGER = Logger.getLogger("eu.agilejava.snoop");
-   private static final String BASE_URI = "ws://localhost:8080/snoop-service/";
+   private static final String DEFAULT_BASE_URI = "ws://localhost:8080/snoop-service/";
    private static final String REGISTER_ENDPOINT = "snoop";
    private static final String STATUS_ENDPOINT = "snoopstatus/";
 
@@ -164,6 +164,6 @@ public class SnoopClient {
       applicationName = snoopConfig.get("applicationName");
       LOGGER.config(() -> "application name: " + applicationName);
 
-      serviceUrl = snoopConfig.get("serviceUrl") != null ? snoopConfig.get("serviceUrl") : BASE_URI;
+      serviceUrl = snoopConfig.get("serviceUrl") != null ? snoopConfig.get("serviceUrl") : DEFAULT_BASE_URI;
    }
 }
