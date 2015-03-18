@@ -67,6 +67,28 @@ public class SnoopClient {
    @Resource
    private TimerService timerService;
 
+   @PostConstruct
+   private void init() {
+
+      LOGGER.config("Checking if snoop is enabled");
+
+      if (SnoopExtensionHelper.isSnoopEnabled()) {
+
+         readProperties();
+
+         if (applicationName != null) {
+            LOGGER.config(() -> "Registering " + applicationName);
+            register(applicationName);
+         } else {
+            LOGGER.config(() -> "Registering with name from annotation: " + applicationName);
+            register(SnoopExtensionHelper.getApplicationName());
+         }
+
+      } else {
+         LOGGER.config("Snoop is not enabled. Use @EnableSnoopClient!");
+      }
+   }
+
    public void register(final String clientId) {
       sendMessage(REGISTER_ENDPOINT, clientId);
 
@@ -81,8 +103,20 @@ public class SnoopClient {
       LOGGER.config(() -> timer.getSchedule().toString());
    }
 
+   /**
+    * Handles incoming message.
+    *
+    * @param session The WebSocket session
+    * @param message The message
+    */
+   @OnMessage
+   public void onMessage(Session session, String message) {
+      LOGGER.config(() -> "Message: " + message);
+      sendMessage(STATUS_ENDPOINT + applicationName, "UP");
+   }
+
    @Timeout
-   public void resend(Timer timer) {
+   public void health(Timer timer) {
       LOGGER.config(() -> "health update: " + Calendar.getInstance().getTime());
       LOGGER.config(() -> "Next: " + timer.getNextTimeout());
       sendMessage(STATUS_ENDPOINT + applicationName, "UP");
@@ -114,45 +148,11 @@ public class SnoopClient {
       return returnValue;
    }
 
-   /**
-    * Handles incoming message.
-    *
-    * @param session The WebSocket session
-    * @param message The message
-    */
-   @OnMessage
-   public void onMessage(Session session, String message) {
-      LOGGER.config(() -> "Message: " + message);
-      sendMessage(STATUS_ENDPOINT + applicationName, "UP");
-   }
-
-   @PostConstruct
-   private void init() {
-
-      LOGGER.config("Checking if snoop is enabled");
-
-      if (SnoopExtensionHelper.isSnoopEnabled()) {
-
-         readProperties();
-
-         if (applicationName != null) {
-            LOGGER.config(() -> "Registering " + applicationName);
-            register(applicationName);
-         } else {
-            LOGGER.config(() -> "Registering with name from annotation: " + applicationName);
-            register(SnoopExtensionHelper.getApplicationName());
-         }
-
-      } else {
-         LOGGER.config("Snoop is not enabled. Use @EnableSnoopClient!");
-      }
-   }
-
    @PreDestroy
    private void deregister() {
 
       LOGGER.config(() -> "Deregistering " + applicationName);
-        sendMessage(STATUS_ENDPOINT + applicationName, "OUT_OF_SERVICE");
+      sendMessage(STATUS_ENDPOINT + applicationName, "OUT_OF_SERVICE");
    }
 
    private void readProperties() {

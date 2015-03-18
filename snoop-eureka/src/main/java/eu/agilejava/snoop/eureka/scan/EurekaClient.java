@@ -61,24 +61,6 @@ public class EurekaClient {
    @Resource
    private TimerService timerService;
 
-   @Timeout
-   public void health(Timer timer) {
-      LOGGER.config(() -> "health update: " + Calendar.getInstance().getTime());
-      LOGGER.config(() -> "Next: " + timer.getNextTimeout());
-
-      EurekaConfig eurekaConfig = new EurekaConfig();
-      eurekaConfig.setStatus("UP");
-      Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
-
-      Response response = ClientBuilder.newClient()
-              .target(serviceUrl + "apps/" + applicationName + "/" + applicationName)
-              .request()
-              .put(entity);
-
-      LOGGER.config(() -> "PUT resulted in: " + response.getStatus() + ", " + response.getEntity());
-
-   }
-
    @PostConstruct
    private void init() {
 
@@ -96,6 +78,7 @@ public class EurekaClient {
          eurekaConfig.setPort(8080);
          eurekaConfig.setStatus("UP");
          eurekaConfig.setHomePageUrl(applicationHome);
+         
          Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
 
          Response response = ClientBuilder.newClient()
@@ -118,6 +101,24 @@ public class EurekaClient {
       } else {
          LOGGER.config("Snoop Eureka is not enabled. Use @EnableEurekaClient!");
       }
+   }
+
+   @Timeout
+   public void health(Timer timer) {
+      LOGGER.config(() -> "health update: " + Calendar.getInstance().getTime());
+      LOGGER.config(() -> "Next: " + timer.getNextTimeout());
+
+      EurekaConfig eurekaConfig = new EurekaConfig();
+      eurekaConfig.setStatus("UP");
+      Entity<InstanceConfig> entity = Entity.entity(new InstanceConfig(eurekaConfig), MediaType.APPLICATION_JSON);
+
+      Response response = ClientBuilder.newClient()
+              .target(serviceUrl + "apps/" + applicationName + "/" + applicationName)
+              .request()
+              .put(entity);
+
+      LOGGER.config(() -> "PUT resulted in: " + response.getStatus() + ", " + response.getEntity());
+
    }
 
    @PreDestroy
