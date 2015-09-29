@@ -9,10 +9,7 @@
    <name>Snoop Root</name>
 
    <modules>
-      <module>snoop</module>
-      <module>snoop-service</module>
       <module>snoop-demo</module>
-      <module>snoop-eureka</module>
       <module>snoop-spring-eureka</module>
    </modules>
 
